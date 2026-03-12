@@ -5,6 +5,7 @@ export type UserRole = 'customer' | 'vendor' | 'admin';
 export type ProductUnit = 'kg' | 'bag' | 'crate' | 'ton' | 'piece';
 
 export type SubscriptionPlan = 'free' | 'pro' | 'enterprise';
+export type VendorStatus = 'pending' | 'approved' | 'suspended';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed';
 
@@ -30,6 +31,8 @@ export interface User {
 // ─── PRODUCT ─────────────────────────────────────────────────────────────────
 
 export interface Product {
+  vendorName: string;
+  isFeatured: any;
   id: string;
   name: string;
   slug: string;
@@ -104,6 +107,7 @@ export interface OrderItem {
 }
 
 export interface Order {
+  customerName: ReactNode;
   id: string;
   customerId: string;
   vendorId: string;

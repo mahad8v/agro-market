@@ -1,3 +1,8 @@
 export { Button } from './Button';
+export { Badge } from './Badge';
+export { Card } from './Card';
 export { Input } from './Input';
-export { Badge, Card, Select, Modal } from './components';
+export { Select } from './Select';
+export { Modal } from './Modal';
+export { StatCard } from './StatCard';
+export { Table, Td } from './Table';

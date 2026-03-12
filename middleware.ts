@@ -1,4 +1,5 @@
 import { ApiError } from './src/types';
+import { NextRequest, NextResponse } from 'next/server';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
@@ -126,3 +127,49 @@ export const api = {
 };
 
 export default api;
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Get auth info from cookie (set on client login)
+  const userCookie = request.cookies.get('agri_user');
+
+  // Protected route checks
+  if (pathname.startsWith('/vendor')) {
+    if (!userCookie) {
+      return NextResponse.redirect(
+        new URL('/login?redirect=' + pathname, request.url),
+      );
+    }
+    try {
+      const user = JSON.parse(userCookie.value);
+      if (user.role !== 'vendor' && user.role !== 'admin') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
+  if (pathname.startsWith('/admin')) {
+    if (!userCookie) {
+      return NextResponse.redirect(
+        new URL('/login?redirect=' + pathname, request.url),
+      );
+    }
+    try {
+      const user = JSON.parse(userCookie.value);
+      if (user.role !== 'admin') {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/vendor/:path*', '/admin/:path*'],
+};
