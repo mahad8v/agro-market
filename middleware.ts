@@ -131,10 +131,8 @@ export default api;
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get auth info from cookie (set on client login)
   const userCookie = request.cookies.get('agri_user');
 
-  // Protected route checks
   if (pathname.startsWith('/vendor')) {
     if (!userCookie) {
       return NextResponse.redirect(
