@@ -1,0 +1,54 @@
+src/
+│
+├── app/
+│   ├── (auth)/
+│   │   ├── login/page.tsx
+│   │   ├── register/page.tsx
+│   │
+│   ├── (marketplace)/
+│   │   ├── page.tsx                  # Homepage
+│   │   ├── products/
+│   │   │   ├── page.tsx              # All products
+│   │   │   ├── [slug]/page.tsx       # Product details
+│   │   ├── vendors/
+│   │   │   ├── [vendorId]/page.tsx   # Vendor public page
+│   │   ├── cart/page.tsx
+│   │   ├── checkout/page.tsx
+│   │
+│   ├── vendor/
+│   │   ├── layout.tsx
+│   │   ├── dashboard/page.tsx
+│   │   ├── products/
+│   │   │   ├── page.tsx
+│   │   │   ├── create/page.tsx
+│   │   │   ├── [id]/edit/page.tsx
+│   │   ├── orders/page.tsx
+│   │   ├── analytics/page.tsx
+│   │   ├── settings/page.tsx
+│   │
+│   ├── admin/
+│   │   ├── layout.tsx
+│   │   ├── dashboard/page.tsx
+│   │   ├── vendors/page.tsx
+│   │   ├── products/page.tsx
+│   │   ├── orders/page.tsx
+│   │   ├── categories/page.tsx
+│
+├── components/
+│   ├── ui/
+│   ├── product/
+│   ├── vendor/
+│   ├── cart/
+│   ├── forms/
+│
+├── features/
+│   ├── products/
+│   ├── vendors/
+│   ├── orders/
+│   ├── auth/
+│
+├── types/
+├── lib/
+├── hooks/
+├── context/
+└── services/

@@ -1,0 +1,344 @@
+[00:00:01.112] Server  LOG     ✓ Ready in 835ms
+[00:00:53.088] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:00:53.476] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:00:54.174] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:00:54.487] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:00:54.754] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/layout"
+[00:00:54.801] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/layout"
+[00:01:31.044] Server  LOG     ✓ Compiled in 26ms
+[00:02:48.925] Browser ERROR   A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+%s%s https://react.dev/link/hydration-mismatch 
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="/www/agro-...">
+                      <SegmentTrieNode>
+                      <Layout>
+                        <html>
+                          <body
+-                           data-new-gr-c-s-check-loaded="14.1274.0"
+-                           data-gr-ext-installed=""
+                          >
+                  ...
+
+[00:32:36.346] Server  WARN    ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:36.401] Server  LOG     ✓ Compiled in 11ms
+[00:32:37.383] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.417] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.417] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.422] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.510] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.510] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.510] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.510] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:37.539] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.546] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.561] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.685] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.753] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.805] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.852] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.864] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.899] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.989] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:37.996] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.021] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.041] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.130] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.134] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.163] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.173] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.180] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.195] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.198] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.231] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.250] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.289] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.313] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.317] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.359] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.374] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.377] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.379] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.423] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.439] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.447] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.464] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.489] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.526] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.601] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.605] Browser ERROR   uncaughtError: Error: ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+
+[00:32:38.626] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.642] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.644] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.690] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.709] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.711] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.715] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.726] Browser ERROR   uncaughtError: Error: ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+
+[00:32:38.763] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.766] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.770] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.789] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.797] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:38.803] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[00:32:39.220] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.220] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.220] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.220] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.222] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.222] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.222] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.222] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:39.222] Browser ERROR   ./www/agro-market/agro-marketplace/middleware.ts
+Middleware is missing expected function export name
+This function is what Next.js runs for every request handled by this middleware.
+
+Why this happens:
+- The file exists but doesn't export a function.
+- The export is not a function (e.g., an object or constant).
+- There's a syntax error preventing the export from being recognized.
+
+To fix it:
+- Ensure this file has either a default or "middleware" function export.
+
+Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[00:32:42.591] Server  LOG     ✓ Compiled in 22ms
+[01:13:22.324] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.580] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.582] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.597] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.605] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.616] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.624] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.729] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.733] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.741] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.759] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.799] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.891] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.900] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.904] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.923] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.927] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.930] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.956] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.959] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:22.964] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:23.101] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:13:23.109] Browser ERROR   uncaughtError: Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.
+[01:18:27.751] Server  ERROR   ⨯ Error: The Middleware file "/middleware" must export a function named `middleware` or a default function.

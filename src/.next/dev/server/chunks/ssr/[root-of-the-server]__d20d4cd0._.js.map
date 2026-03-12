@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///home/zerobug110/www/agro-market/agro-marketplace/app/%28marketplace%29/page.tsx"],"sourcesContent":["export default function HomePage() {\n  return (\n    <div>\n      <h1>Agro Marketplace</h1>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;;AAAe,SAAS;IACtB,qBACE,8RAAC;kBACC,cAAA,8RAAC;sBAAG;;;;;;;;;;;AAGV"}}]
+}

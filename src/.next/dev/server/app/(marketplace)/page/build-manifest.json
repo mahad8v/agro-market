@@ -1,0 +1,22 @@
+{
+  "devFiles": [],
+  "ampDevFiles": [],
+  "polyfillFiles": [
+    "static/chunks/13bde_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
+  "lowPriorityFiles": [],
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_888fd1b3._.js",
+    "static/chunks/13bde_next_dist_compiled_react-dom_22dd9208._.js",
+    "static/chunks/13bde_next_dist_compiled_react-server-dom-turbopack_679d9817._.js",
+    "static/chunks/13bde_next_dist_compiled_next-devtools_index_bf9b5bea.js",
+    "static/chunks/13bde_next_dist_compiled_70c401b7._.js",
+    "static/chunks/13bde_next_dist_client_71471c26._.js",
+    "static/chunks/13bde_next_dist_9499882a._.js",
+    "static/chunks/13bde_@swc_helpers_cjs_dd9a9e3c._.js",
+    "static/chunks/www_agro-market_agro-marketplace_a0ff3932._.js",
+    "static/chunks/turbopack-www_agro-market_agro-marketplace_9eee68d3._.js"
+  ],
+  "pages": {},
+  "ampFirstPages": []
+}
