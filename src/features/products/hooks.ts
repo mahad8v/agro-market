@@ -1,7 +1,6 @@
 import { productsApi } from './api';
 import { Product, ProductFilters } from '@/types';
-import { useQueryClient } from '@tanstack/react-query';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 // ─── QUERY KEYS ───────────────────────────────────────────────────────────────
 
@@ -18,8 +17,8 @@ export const productKeys = {
 };
 
 export function useProducts(filters?: ProductFilters) {
-  return useQueryClient({
-    //@ts-ignore
+  return useQuery({
+    // ✅ was useQueryClient
     queryKey: productKeys.list(filters),
     queryFn: () => productsApi.getProducts(filters),
   });
@@ -37,6 +36,9 @@ export function useFeaturedProducts() {
   return useQuery({
     queryKey: productKeys.featured(),
     queryFn: () => productsApi.getFeaturedProducts(),
+    retry: 2, // 👈 retry twice on failure
+    staleTime: 1000 * 60 * 5, // 👈 cache for 5 minutes
+    refetchOnWindowFocus: false, // 👈 don't refetch on tab switch
   });
 }
 
@@ -45,6 +47,9 @@ export function useVendorProducts(vendorId: string) {
     queryKey: productKeys.vendorProducts(vendorId),
     queryFn: () => productsApi.getVendorProducts(vendorId),
     enabled: !!vendorId,
+    retry: 2, // 👈 retry twice on failure
+    staleTime: 1000 * 60 * 5, // 👈 cache for 5 minutes
+    refetchOnWindowFocus: false, // 👈 don't refetch on tab switch
   });
 }
 

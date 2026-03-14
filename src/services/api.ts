@@ -1,21 +1,16 @@
 import { ApiError } from '@/types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-
-// ─── REQUEST CONFIG ───────────────────────────────────────────────────────────
+const BASE_URL = 'http://localhost:3000/api';
 
 interface RequestConfig extends RequestInit {
   params?: Record<string, string | number | boolean | undefined>;
+  isMultipart?: boolean; // ✅ ADD THIS FLAG
 }
-
-// ─── TOKEN HELPER ─────────────────────────────────────────────────────────────
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('auth_token');
 }
-
-// ─── BUILD URL WITH QUERY PARAMS ──────────────────────────────────────────────
 
 function buildUrl(
   endpoint: string,
@@ -32,18 +27,18 @@ function buildUrl(
   return url.toString();
 }
 
-// ─── CORE FETCH WRAPPER ───────────────────────────────────────────────────────
-
 async function request<T>(
   endpoint: string,
   config: RequestConfig = {},
 ): Promise<T> {
-  const { params, headers, ...rest } = config;
+  const { params, headers, isMultipart, ...rest } = config; // ✅ extract isMultipart
 
   const token = getToken();
 
+  // ✅ Don't set Content-Type for multipart — browser sets it automatically
+  // with the correct boundary. Setting it manually breaks file uploads.
   const defaultHeaders: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(!isMultipart && { 'Content-Type': 'application/json' }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
@@ -57,7 +52,6 @@ async function request<T>(
     },
   });
 
-  // Handle non-JSON responses
   const contentType = response.headers.get('content-type');
   const isJson = contentType?.includes('application/json');
 
@@ -78,8 +72,6 @@ async function request<T>(
 
   return isJson ? response.json() : (response.text() as T);
 }
-
-// ─── HTTP METHODS ─────────────────────────────────────────────────────────────
 
 export const api = {
   get<T>(
@@ -114,13 +106,12 @@ export const api = {
     return request<T>(endpoint, { method: 'DELETE' });
   },
 
-  // For file uploads (multipart/form-data)
+  // ✅ Fixed: pass isMultipart flag so Content-Type is NOT set manually
   upload<T>(endpoint: string, formData: FormData): Promise<T> {
-    const token = getToken();
     return request<T>(endpoint, {
       method: 'POST',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,
+      isMultipart: true,
     });
   },
 };

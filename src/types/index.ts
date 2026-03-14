@@ -1,6 +1,6 @@
 // ─── ENUMS ───────────────────────────────────────────────────────────────────
 
-export type UserRole = 'customer' | 'vendor' | 'admin';
+export type UserRole = 'CUSTOMER' | 'VENDOR' | 'ADMIN';
 
 export type ProductUnit = 'kg' | 'bag' | 'crate' | 'ton' | 'piece';
 

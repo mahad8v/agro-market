@@ -27,7 +27,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <span className="text-2xl">🌾</span>
             <span className="text-xl font-bold text-green-700 hidden sm:block">
-              AgroMarket
+              Senela market
             </span>
           </Link>
 
@@ -81,7 +81,7 @@ export function Navbar() {
             {/* Auth */}
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
-                {user?.role === 'vendor' && (
+                {user?.role === 'VENDOR' && (
                   <Link
                     href="/vendor/dashboard"
                     className="text-sm text-green-700 font-medium hidden md:block"
@@ -89,7 +89,7 @@ export function Navbar() {
                     Dashboard
                   </Link>
                 )}
-                {user?.role === 'admin' && (
+                {user?.role === 'ADMIN' && (
                   <Link
                     href="/admin/dashboard"
                     className="text-sm text-green-700 font-medium hidden md:block"

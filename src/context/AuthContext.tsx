@@ -10,6 +10,7 @@ import React, {
 import { useRouter } from 'next/navigation';
 
 import { authApi } from '../features/auth/api';
+
 import {
   AuthResponse,
   LoginCredentials,
@@ -17,8 +18,6 @@ import {
   User,
   UserRole,
 } from '../types';
-
-// ─── TYPES ────────────────────────────────────────────────────────────────────
 
 interface AuthContextValue {
   user: User | null;
@@ -30,29 +29,37 @@ interface AuthContextValue {
   logout: () => void;
 }
 
-// ─── CONTEXT ─────────────────────────────────────────────────────────────────
-
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-// ─── REDIRECT MAP ─────────────────────────────────────────────────────────────
-
 const ROLE_REDIRECT: Record<UserRole, string> = {
-  customer: '/',
-  vendor: '/vendor/dashboard',
-  admin: '/admin/dashboard',
+  CUSTOMER: '/',
+  VENDOR: '/vendor/dashboard',
+  ADMIN: '/admin/dashboard',
 };
 
-// ─── PROVIDER ────────────────────────────────────────────────────────────────
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+const TOKEN_KEY = 'auth_token'; // single source of truth — use this everywhere
+
+function saveToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+  document.cookie = `auth_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+}
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.cookie = 'auth_token=; path=/; max-age=0';
+}
+
+// ── provider ─────────────────────────────────────────────────────────────────
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  // Load user from token on mount
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('auth_token');
+      const token = localStorage.getItem(TOKEN_KEY);
       if (!token) {
         setIsLoading(false);
         return;
@@ -61,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const currentUser = await authApi.getCurrentUser();
         setUser(currentUser);
       } catch {
-        localStorage.removeItem('auth_token');
+        clearToken(); // token expired or invalid
       } finally {
         setIsLoading(false);
       }
@@ -72,9 +79,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(
     async (credentials: LoginCredentials) => {
       const response: AuthResponse = await authApi.login(credentials);
-      localStorage.setItem('auth_token', response.token);
+      saveToken(response.token);
       setUser(response.user);
-      router.push(ROLE_REDIRECT[response.user.role]);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      console.log(response.user);
+      router.replace(ROLE_REDIRECT[response.user.role]);
+      // router.replace('admin/dasboard');
+
+      router.refresh();
     },
     [router],
   );
@@ -82,17 +94,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = useCallback(
     async (data: RegisterData) => {
       const response: AuthResponse = await authApi.register(data);
-      localStorage.setItem('auth_token', response.token);
+      saveToken(response.token);
       setUser(response.user);
       router.push(ROLE_REDIRECT[response.user.role]);
     },
     [router],
   );
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('auth_token');
-    setUser(null);
-    router.push('/login');
+  const logout = useCallback(async () => {
+    try {
+      await authApi.logout(); // tell backend to invalidate token
+    } catch {
+    } finally {
+      clearToken();
+      setUser(null);
+      router.push('/login');
+    }
   }, [router]);
 
   const value: AuthContextValue = {
@@ -107,8 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-// ─── HOOK ────────────────────────────────────────────────────────────────────
 
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);

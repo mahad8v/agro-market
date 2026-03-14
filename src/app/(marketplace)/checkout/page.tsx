@@ -10,12 +10,44 @@ import { ShippingAddress } from '@/types';
 import Link from 'next/link';
 
 const NIGERIAN_STATES = [
-  'Abia', 'Adamawa', 'Akwa Ibom', 'Anambra', 'Bauchi', 'Bayelsa', 'Benue',
-  'Borno', 'Cross River', 'Delta', 'Ebonyi', 'Edo', 'Ekiti', 'Enugu',
-  'FCT', 'Gombe', 'Imo', 'Jigawa', 'Kaduna', 'Kano', 'Katsina', 'Kebbi',
-  'Kogi', 'Kwara', 'Lagos', 'Nasarawa', 'Niger', 'Ogun', 'Ondo', 'Osun',
-  'Oyo', 'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara',
-].map(s => ({ value: s, label: s }));
+  'Abia',
+  'Adamawa',
+  'Akwa Ibom',
+  'Anambra',
+  'Bauchi',
+  'Bayelsa',
+  'Benue',
+  'Borno',
+  'Cross River',
+  'Delta',
+  'Ebonyi',
+  'Edo',
+  'Ekiti',
+  'Enugu',
+  'FCT',
+  'Gombe',
+  'Imo',
+  'Jigawa',
+  'Kaduna',
+  'Kano',
+  'Katsina',
+  'Kebbi',
+  'Kogi',
+  'Kwara',
+  'Lagos',
+  'Nasarawa',
+  'Niger',
+  'Ogun',
+  'Ondo',
+  'Osun',
+  'Oyo',
+  'Plateau',
+  'Rivers',
+  'Sokoto',
+  'Taraba',
+  'Yobe',
+  'Zamfara',
+].map((s) => ({ value: s, label: s }));
 
 export default function CheckoutPage() {
   const { vendorGroups, totalAmount, clearCart } = useCart();
@@ -37,7 +69,12 @@ export default function CheckoutPage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center">
         <p className="text-gray-500">Your cart is empty.</p>
-        <Link href="/products" className="mt-4 inline-block text-green-600 hover:underline">Browse Products</Link>
+        <Link
+          href="/products"
+          className="mt-4 inline-block text-green-600 hover:underline"
+        >
+          Browse Products
+        </Link>
       </div>
     );
   }
@@ -68,8 +105,8 @@ export default function CheckoutPage() {
   };
 
   const set = (key: keyof ShippingAddress, value: string) => {
-    setForm(prev => ({ ...prev, [key]: value }));
-    setErrors(prev => ({ ...prev, [key]: undefined }));
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
   return (
@@ -81,14 +118,16 @@ export default function CheckoutPage() {
           {/* Shipping Form */}
           <div className="lg:col-span-2 space-y-6">
             <div className="rounded-xl border border-gray-200 bg-white p-6">
-              <h2 className="font-semibold text-gray-900 text-lg mb-5">Shipping Information</h2>
+              <h2 className="font-semibold text-gray-900 text-lg mb-5">
+                Shipping Information
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <Input
                     label="Full Name"
                     required
                     value={form.fullName}
-                    onChange={e => set('fullName', e.target.value)}
+                    onChange={(e) => set('fullName', e.target.value)}
                     error={errors.fullName}
                     placeholder="John Doe"
                   />
@@ -97,7 +136,7 @@ export default function CheckoutPage() {
                   label="Phone Number"
                   required
                   value={form.phone}
-                  onChange={e => set('phone', e.target.value)}
+                  onChange={(e) => set('phone', e.target.value)}
                   error={errors.phone}
                   placeholder="+234 801 234 5678"
                 />
@@ -105,7 +144,7 @@ export default function CheckoutPage() {
                   label="State"
                   required
                   value={form.state}
-                  onChange={e => set('state', e.target.value)}
+                  onChange={(e) => set('state', e.target.value)}
                   error={errors.state}
                   options={NIGERIAN_STATES}
                   placeholder="Select State"
@@ -114,14 +153,14 @@ export default function CheckoutPage() {
                   label="City"
                   required
                   value={form.city}
-                  onChange={e => set('city', e.target.value)}
+                  onChange={(e) => set('city', e.target.value)}
                   error={errors.city}
                   placeholder="Lagos"
                 />
                 <Input
                   label="Postal Code"
                   value={form.postalCode}
-                  onChange={e => set('postalCode', e.target.value)}
+                  onChange={(e) => set('postalCode', e.target.value)}
                   placeholder="100001"
                 />
                 <div className="sm:col-span-2">
@@ -129,7 +168,7 @@ export default function CheckoutPage() {
                     label="Delivery Address"
                     required
                     value={form.address}
-                    onChange={e => set('address', e.target.value)}
+                    onChange={(e) => set('address', e.target.value)}
                     error={errors.address}
                     placeholder="123 Main Street, Ikeja"
                   />
@@ -139,19 +178,42 @@ export default function CheckoutPage() {
 
             {/* Delivery Options */}
             <div className="rounded-xl border border-gray-200 bg-white p-6">
-              <h2 className="font-semibold text-gray-900 text-lg mb-4">Delivery Method</h2>
+              <h2 className="font-semibold text-gray-900 text-lg mb-4">
+                Delivery Method
+              </h2>
               <div className="space-y-3">
                 {[
-                  { id: 'standard', label: 'Standard Delivery', desc: '3–5 business days', price: 'Free' },
-                  { id: 'express', label: 'Express Delivery', desc: '1–2 business days', price: '₦2,500' },
-                ].map(opt => (
-                  <label key={opt.id} className="flex items-center gap-4 cursor-pointer rounded-lg border border-gray-200 p-4 hover:border-green-400 transition-colors">
-                    <input type="radio" name="delivery" value={opt.id} defaultChecked={opt.id === 'standard'} className="text-green-600" />
+                  {
+                    id: 'standard',
+                    label: 'Standard Delivery',
+                    desc: '3–5 business days',
+                    price: 'Free',
+                  },
+                  {
+                    id: 'express',
+                    label: 'Express Delivery',
+                    desc: '1–2 business days',
+                    price: 'D2,500',
+                  },
+                ].map((opt) => (
+                  <label
+                    key={opt.id}
+                    className="flex items-center gap-4 cursor-pointer rounded-lg border border-gray-200 p-4 hover:border-green-400 transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="delivery"
+                      value={opt.id}
+                      defaultChecked={opt.id === 'standard'}
+                      className="text-green-600"
+                    />
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{opt.label}</p>
                       <p className="text-sm text-gray-500">{opt.desc}</p>
                     </div>
-                    <span className="font-semibold text-green-700">{opt.price}</span>
+                    <span className="font-semibold text-green-700">
+                      {opt.price}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -163,13 +225,25 @@ export default function CheckoutPage() {
             <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-6 space-y-4">
               <h2 className="font-bold text-gray-900 text-lg">Order Summary</h2>
 
-              {vendorGroups.map(group => (
+              {vendorGroups.map((group) => (
                 <div key={group.vendor?.id ?? 'unknown'} className="space-y-2">
-                  <p className="text-xs font-semibold text-gray-500 uppercase">{group.vendor?.businessName}</p>
-                  {group.items.map(item => (
-                    <div key={item.product.id} className="flex justify-between text-sm text-gray-600">
-                      <span className="line-clamp-1 flex-1 mr-2">{item.product.name} ×{item.quantity}</span>
-                      <span className="shrink-0">{formatCurrency((item.product.discountPrice ?? item.product.price) * item.quantity)}</span>
+                  <p className="text-xs font-semibold text-gray-500 uppercase">
+                    {group.vendor?.businessName}
+                  </p>
+                  {group.items.map((item) => (
+                    <div
+                      key={item.product.id}
+                      className="flex justify-between text-sm text-gray-600"
+                    >
+                      <span className="line-clamp-1 flex-1 mr-2">
+                        {item.product.name} ×{item.quantity}
+                      </span>
+                      <span className="shrink-0">
+                        {formatCurrency(
+                          (item.product.discountPrice ?? item.product.price) *
+                            item.quantity,
+                        )}
+                      </span>
                     </div>
                   ))}
                   <div className="flex justify-between text-sm font-medium text-gray-700 border-t border-gray-100 pt-2">
@@ -181,7 +255,9 @@ export default function CheckoutPage() {
 
               <div className="border-t border-gray-200 pt-3 flex justify-between font-bold text-gray-900">
                 <span>Total</span>
-                <span className="text-green-700 text-lg">{formatCurrency(totalAmount)}</span>
+                <span className="text-green-700 text-lg">
+                  {formatCurrency(totalAmount)}
+                </span>
               </div>
 
               <button
@@ -189,8 +265,12 @@ export default function CheckoutPage() {
                 disabled={isPending}
                 className="w-full flex items-center justify-center gap-2 bg-green-600 text-white font-semibold py-3 rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isPending && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />}
-                {isPending ? 'Placing Order...' : `Place Order · ${formatCurrency(totalAmount)}`}
+                {isPending && (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                )}
+                {isPending
+                  ? 'Placing Order...'
+                  : `Place Order · ${formatCurrency(totalAmount)}`}
               </button>
 
               <p className="text-xs text-center text-gray-400">
