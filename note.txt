@@ -1,0 +1,6 @@
+Nextjs: for  frontend of the project
+Next server side: for the backend
+Next auth: for the authentication
+Typescript: build with typescript
+database: postgres Sql along with prisma
+state management: react query
