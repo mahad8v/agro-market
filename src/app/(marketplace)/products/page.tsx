@@ -23,18 +23,22 @@ export default function ProductsPage() {
   const { data, isLoading } = useProducts(filters);
 
   const handleFiltersChange = useCallback((newFilters: Filters) => {
-    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+    setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }));
     setSidebarOpen(false);
   }, []);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    setFilters(prev => ({ ...prev, search: fd.get('search') as string, page: 1 }));
+    setFilters((prev) => ({
+      ...prev,
+      search: fd.get('search') as string,
+      page: 1,
+    }));
   };
 
   const handlePageChange = (page: number) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters((prev) => ({ ...prev, page }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -47,7 +51,9 @@ export default function ProductsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">All Products</h1>
           {data && (
-            <p className="text-sm text-gray-500 mt-1">{data.total} products found</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {data.total} products found
+            </p>
           )}
         </div>
         <button
@@ -85,13 +91,24 @@ export default function ProductsPage() {
         {/* Mobile Sidebar */}
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+            <div
+              className="absolute inset-0 bg-black/50"
+              onClick={() => setSidebarOpen(false)}
+            />
             <div className="absolute left-0 top-0 bottom-0 w-72 bg-white p-6 overflow-y-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold text-gray-900">Filters</h2>
-                <button onClick={() => setSidebarOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="text-gray-400 hover:text-gray-600 text-xl"
+                >
+                  &times;
+                </button>
               </div>
-              <ProductFilters filters={filters} onChange={handleFiltersChange} />
+              <ProductFilters
+                filters={filters}
+                onChange={handleFiltersChange}
+              />
             </div>
           </div>
         )}
@@ -114,19 +131,21 @@ export default function ProductsPage() {
               >
                 ← Prev
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`rounded-lg border px-3 py-2 text-sm ${
-                    filters.page === page
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`rounded-lg border px-3 py-2 text-sm ${
+                      filters.page === page
+                        ? 'bg-green-600 text-white border-green-600'
+                        : 'border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
               <button
                 onClick={() => handlePageChange((filters.page ?? 1) + 1)}
                 disabled={(filters.page ?? 1) >= totalPages}
