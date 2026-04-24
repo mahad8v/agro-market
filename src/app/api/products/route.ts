@@ -5,9 +5,17 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const result = await productService.getAll({
-      categoryId: searchParams.get('categoryId') ?? undefined,
+      category: searchParams.get('category') ?? undefined,
       vendorId: searchParams.get('vendorId') ?? undefined,
       search: searchParams.get('search') ?? undefined,
+      isOrganic: searchParams.get('isOrganic') === 'true' ? true : undefined,
+      minPrice: searchParams.get('minPrice')
+        ? Number(searchParams.get('minPrice'))
+        : undefined,
+      maxPrice: searchParams.get('maxPrice')
+        ? Number(searchParams.get('maxPrice'))
+        : undefined,
+      location: searchParams.get('location') ?? undefined,
       page: Number(searchParams.get('page') ?? 1),
       limit: Number(searchParams.get('limit') ?? 12),
     });

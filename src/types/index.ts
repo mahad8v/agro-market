@@ -17,7 +17,7 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled';
 
-// ─── USER ────────────────────────────────────────────────────────────────────
+// ─── USER
 
 export interface User {
   id: string;
@@ -28,30 +28,31 @@ export interface User {
   createdAt: string;
 }
 
-// ─── PRODUCT ─────────────────────────────────────────────────────────────────
+//== PRODUCT
 
 export interface Product {
-  vendorName: string;
-  isFeatured: any;
   id: string;
   name: string;
   slug: string;
   description: string;
-  category: string;
-  subCategory: string;
+  category: Category;
+  categoryId: string;
+  subCategory?: string;
   price: number;
-  discountPrice?: number;
+  discountPrice?: number | null;
   stock: number;
   unit: ProductUnit;
   images: string[];
   isOrganic: boolean;
-  harvestDate: string;
+  isFeatured?: boolean;
+  harvestDate: string | null;
   location: string;
   vendorId: string;
   vendor?: Vendor;
   rating: number;
   totalReviews: number;
   createdAt: string;
+  vendorName?: string;
 }
 
 export interface ProductFilters {

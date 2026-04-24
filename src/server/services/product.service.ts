@@ -1,45 +1,143 @@
 import { db } from '@/server/db';
-import { CreateProductInput, UpdateProductInput } from '@/server/validations/product';
+import {
+  CreateProductInput,
+  UpdateProductInput,
+} from '@/server/validations/product';
 import slugify from 'slugify';
 
 export const productService = {
-  async getAll(params?: { categoryId?: string; vendorId?: string; search?: string; page?: number; limit?: number }) {
-    const { categoryId, vendorId, search, page = 1, limit = 12 } = params ?? {};
+  // async getAll(params?: {
+  //   categoryId?: string;
+  //   vendorId?: string;
+  //   search?: string;
+  //   page?: number;
+  //   limit?: number;
+  // }) {
+  //   const { categoryId, vendorId, search, page = 1, limit = 12 } = params ?? {};
+  //   const where = {
+  //     ...(categoryId && { categoryId }),
+  //     ...(vendorId && { vendorId }),
+  //     ...(search && {
+  //       OR: [
+  //         { name: { contains: search, mode: 'insensitive' as const } },
+  //         { description: { contains: search, mode: 'insensitive' as const } },
+  //       ],
+  //     }),
+  //   };
+  //   const [products, total] = await Promise.all([
+  //     db.product.findMany({
+  //       where,
+  //       include: {
+  //         vendor: { select: { businessName: true, slug: true } },
+  //         category: true,
+  //       },
+  //       orderBy: { createdAt: 'desc' },
+  //       skip: (page - 1) * limit,
+  //       take: limit,
+  //     }),
+  //     db.product.count({ where }),
+  //   ]);
+  //   return {
+  //     products,
+  //     total,
+  //     page,
+  //     limit,
+  //     totalPages: Math.ceil(total / limit),
+  //   };
+  // },
+
+  async getAll(params?: {
+    category?: string; // ← slug, not categoryId
+    vendorId?: string;
+    search?: string;
+    isOrganic?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    location?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const {
+      category,
+      vendorId,
+      search,
+      isOrganic,
+      minPrice,
+      maxPrice,
+      location,
+      page = 1,
+      limit = 12,
+    } = params ?? {};
+
     const where = {
-      ...(categoryId && { categoryId }),
-      ...(vendorId   && { vendorId }),
-      ...(search && { OR: [
-        { name:        { contains: search, mode: 'insensitive' as const } },
-        { description: { contains: search, mode: 'insensitive' as const } },
-      ]}),
+      ...(category && { category: { slug: category } }), // ← filter by slug
+      ...(vendorId && { vendorId }),
+      ...(isOrganic !== undefined && { isOrganic }),
+      ...(location && {
+        location: { contains: location, mode: 'insensitive' as const },
+      }),
+      ...(minPrice !== undefined && { price: { gte: minPrice } }),
+      ...(maxPrice !== undefined && { price: { lte: maxPrice } }),
+      ...(minPrice !== undefined &&
+        maxPrice !== undefined && {
+          price: { gte: minPrice, lte: maxPrice },
+        }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' as const } },
+          { description: { contains: search, mode: 'insensitive' as const } },
+        ],
+      }),
     };
+
     const [products, total] = await Promise.all([
       db.product.findMany({
         where,
-        include: { vendor: { select: { businessName: true, slug: true } }, category: true },
+        include: {
+          vendor: { select: { businessName: true, slug: true } },
+          category: true,
+        },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
       }),
       db.product.count({ where }),
     ]);
-    return { products, total, page, limit, totalPages: Math.ceil(total / limit) };
+
+    return {
+      products,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   },
 
   async getBySlug(slug: string) {
     return db.product.findUnique({
-      where:   { slug },
+      where: { slug },
       include: {
-        vendor:   { select: { id: true, businessName: true, slug: true, rating: true, isVerified: true } },
+        vendor: {
+          select: {
+            id: true,
+            businessName: true,
+            slug: true,
+            rating: true,
+            isVerified: true,
+          },
+        },
         category: true,
-        reviews:  { include: { user: { select: { name: true, avatar: true } } }, take: 10 },
+        reviews: {
+          include: { user: { select: { name: true, avatar: true } } },
+          take: 10,
+        },
       },
     });
   },
 
   async getByVendor(vendorId: string) {
     return db.product.findMany({
-      where:   { vendorId },
+      where: { vendorId },
       include: { category: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -53,7 +151,12 @@ export const productService = {
   async update(id: string, data: UpdateProductInput) {
     return db.product.update({
       where: { id },
-      data:  { ...data, ...(data.name && { slug: slugify(data.name, { lower: true, strict: true }) }) },
+      data: {
+        ...data,
+        ...(data.name && {
+          slug: slugify(data.name, { lower: true, strict: true }),
+        }),
+      },
     });
   },
 

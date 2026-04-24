@@ -18,9 +18,9 @@ export const productKeys = {
 
 export function useProducts(filters?: ProductFilters) {
   return useQuery({
-    // ✅ was useQueryClient
     queryKey: productKeys.list(filters),
     queryFn: () => productsApi.getProducts(filters),
+    enabled: filters?.category !== undefined ? !!filters.category : true,
   });
 }
 
