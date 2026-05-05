@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Input, Button } from '@/components/ui';
-import { RegisterData } from '@/types';
+import { RegisterData } from '@/types/client';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -24,14 +24,17 @@ export default function RegisterPage() {
     try {
       await register(form);
     } catch (err: unknown) {
-      setError((err as { message?: string }).message || 'Registration failed. Please try again.');
+      setError(
+        (err as { message?: string }).message ||
+          'Registration failed. Please try again.',
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   const set = (key: keyof RegisterData, value: string) => {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -41,14 +44,18 @@ export default function RegisterPage() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2">
               <span className="text-3xl">🌾</span>
-              <span className="text-2xl font-bold text-green-700">AgroMarket</span>
+              <span className="text-2xl font-bold text-green-700">
+                AgroMarket
+              </span>
             </Link>
-            <p className="text-gray-500 mt-2 text-sm">Create your account to get started.</p>
+            <p className="text-gray-500 mt-2 text-sm">
+              Create your account to get started.
+            </p>
           </div>
 
           {/* Role selector */}
           <div className="grid grid-cols-2 gap-3 mb-6">
-            {(['customer', 'vendor'] as const).map(role => (
+            {(['customer', 'vendor'] as const).map((role) => (
               <button
                 key={role}
                 type="button"
@@ -59,7 +66,9 @@ export default function RegisterPage() {
                     : 'border-gray-200 text-gray-600 hover:border-gray-300'
                 }`}
               >
-                <span className="text-2xl">{role === 'customer' ? '🛒' : '🏪'}</span>
+                <span className="text-2xl">
+                  {role === 'customer' ? '🛒' : '🏪'}
+                </span>
                 <span className="text-sm font-medium capitalize">{role}</span>
                 <span className="text-xs text-center text-gray-400">
                   {role === 'customer' ? 'Buy products' : 'Sell products'}
@@ -79,7 +88,7 @@ export default function RegisterPage() {
               label="Full Name"
               required
               value={form.name}
-              onChange={e => set('name', e.target.value)}
+              onChange={(e) => set('name', e.target.value)}
               placeholder="John Doe"
             />
             {form.role === 'vendor' && (
@@ -87,7 +96,7 @@ export default function RegisterPage() {
                 label="Business Name"
                 required
                 value={form.businessName || ''}
-                onChange={e => set('businessName', e.target.value)}
+                onChange={(e) => set('businessName', e.target.value)}
                 placeholder="Green Farm Co."
               />
             )}
@@ -96,7 +105,7 @@ export default function RegisterPage() {
               type="email"
               required
               value={form.email}
-              onChange={e => set('email', e.target.value)}
+              onChange={(e) => set('email', e.target.value)}
               placeholder="you@example.com"
             />
             <Input
@@ -104,18 +113,26 @@ export default function RegisterPage() {
               type="password"
               required
               value={form.password}
-              onChange={e => set('password', e.target.value)}
+              onChange={(e) => set('password', e.target.value)}
               placeholder="At least 8 characters"
             />
 
-            <Button type="submit" isLoading={isLoading} className="w-full" size="lg">
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              className="w-full"
+              size="lg"
+            >
               Create Account
             </Button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{' '}
-            <Link href="/login" className="text-green-600 font-medium hover:underline">
+            <Link
+              href="/login"
+              className="text-green-600 font-medium hover:underline"
+            >
               Sign in
             </Link>
           </p>
