@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { StatCard, Card, Badge, Table, Td } from '@/components/ui';
 import { MOCK_VENDOR_STATS, MOCK_ORDERS, MOCK_PRODUCTS } from '@/lib/mockData';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils';
-import { OrderStatus, PaymentStatus } from '@/types';
+import { OrderStatus, PaymentStatus } from '@/types/client';
 
 function getOrderStatusBadge(status: OrderStatus) {
   const map: Record<OrderStatus, { label: string; variant: any }> = {
