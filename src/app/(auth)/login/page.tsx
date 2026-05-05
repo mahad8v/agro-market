@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { Input, Button } from '@/components/ui';
-import { LoginCredentials } from '@/types';
+import { LoginCredentials } from '@/types/client';
 
 export default function LoginPage() {
   const { login } = useAuth();
