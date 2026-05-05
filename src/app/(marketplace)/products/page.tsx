@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { ProductFilters } from '@/components/product/ProductFilters';
 import { useProducts } from '@/features/products/hooks';
-import { ProductFilters as Filters } from '@/types';
+import { ProductFilters as Filters } from '@/types/client';
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
