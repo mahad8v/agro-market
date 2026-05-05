@@ -662,7 +662,7 @@ import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { useCreateOrder } from '@/features/orders/hooks';
 import { formatCurrency } from '@/lib/utils';
-import { ShippingAddress } from '@/types';
+import { ShippingAddress } from '@/types/client';
 import Link from 'next/link';
 
 // ── Gambia Regions ─────────────────────────────────────────────────────────
