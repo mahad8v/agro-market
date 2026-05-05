@@ -17,7 +17,7 @@ import {
   RegisterData,
   User,
   UserRole,
-} from '../types';
+} from '../types/client';
 
 interface AuthContextValue {
   user: User | null;

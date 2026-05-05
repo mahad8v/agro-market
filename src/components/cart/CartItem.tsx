@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { CartItem as CartItemType } from '@/types';
+import { CartItem as CartItemType } from '@/types/client';
 import { useCart } from '../../context/CartContext';
 import { formatCurrency } from '../../lib/utils';
 

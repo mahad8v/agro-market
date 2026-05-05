@@ -1,5 +1,5 @@
 import React from 'react';
-import { Product } from '@/types';
+import { Product } from '@/types/client';
 import { ProductCard } from './ProductCard';
 
 interface ProductGridProps {
@@ -22,11 +22,17 @@ function ProductSkeleton() {
   );
 }
 
-export function ProductGrid({ products, isLoading, emptyMessage = 'No products found.' }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  isLoading,
+  emptyMessage = 'No products found.',
+}: ProductGridProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)}
+        {Array.from({ length: 8 }).map((_, i) => (
+          <ProductSkeleton key={i} />
+        ))}
       </div>
     );
   }
@@ -42,7 +48,7 @@ export function ProductGrid({ products, isLoading, emptyMessage = 'No products f
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-      {products.map(product => (
+      {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
     </div>

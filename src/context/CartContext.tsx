@@ -7,7 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { CartItem, CartVendorGroup, Product } from '../types';
+import { CartItem, CartVendorGroup, Product } from '../types/client';
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 

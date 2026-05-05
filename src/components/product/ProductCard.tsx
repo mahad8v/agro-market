@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product } from '@/types';
+import { Product } from '@/types/client';
 import { Badge, Card } from '@/components/ui';
 import { formatCurrency, getDiscountPercent } from '@/lib/utils';
 import { useCart } from '@/context/CartContext';
@@ -47,13 +47,19 @@ export function ProductCard({ product }: ProductCardProps) {
           <Badge variant="gray">{product.unit}</Badge>
         </div>
 
-        <p className="text-xs text-gray-500 line-clamp-1">📍 {product.location}</p>
+        <p className="text-xs text-gray-500 line-clamp-1">
+          📍 {product.location}
+        </p>
 
         {/* Rating */}
         <div className="flex items-center gap-1">
           <span className="text-yellow-400 text-xs">★</span>
-          <span className="text-xs text-gray-700">{product.rating.toFixed(1)}</span>
-          <span className="text-xs text-gray-400">({product.totalReviews})</span>
+          <span className="text-xs text-gray-700">
+            {product.rating.toFixed(1)}
+          </span>
+          <span className="text-xs text-gray-400">
+            ({product.totalReviews})
+          </span>
         </div>
 
         {/* Price */}
@@ -75,11 +81,15 @@ export function ProductCard({ product }: ProductCardProps) {
             inCart
               ? 'bg-green-100 text-green-700 hover:bg-green-200'
               : product.stock === 0
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-green-600 text-white hover:bg-green-700'
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-green-600 text-white hover:bg-green-700'
           }`}
         >
-          {product.stock === 0 ? 'Out of Stock' : inCart ? '✓ In Cart' : 'Add to Cart'}
+          {product.stock === 0
+            ? 'Out of Stock'
+            : inCart
+              ? '✓ In Cart'
+              : 'Add to Cart'}
         </button>
       </div>
     </Card>

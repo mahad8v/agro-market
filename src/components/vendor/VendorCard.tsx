@@ -59,7 +59,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Vendor } from '@/types';
+import { Vendor } from '@/types/client';
 import { Badge, Card } from '@/components/ui';
 
 interface VendorCardProps {
