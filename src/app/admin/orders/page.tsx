@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Badge, Card, Table, Td, Input } from '@/components/ui';
 import { MOCK_ORDERS } from '@/lib/mockData';
-import { Order, OrderStatus, PaymentStatus } from '@/types';
+import { Order, OrderStatus, PaymentStatus } from '@/types/client';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 function getOrderStatusBadge(status: OrderStatus) {
