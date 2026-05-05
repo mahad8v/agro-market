@@ -1,4 +1,4 @@
-import { ApiError } from './src/types';
+import { ApiError } from './src/types/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
