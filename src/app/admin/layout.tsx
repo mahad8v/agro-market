@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
+import { Toaster } from 'sonner';
 
 const NAV_ITEMS = [
   {
@@ -292,6 +293,7 @@ export default function AdminLayout({
         </header>
 
         <main className="flex-1 overflow-y-auto">{children}</main>
+        <Toaster position="top-right" richColors />
       </div>
     </div>
   );
