@@ -1,8 +1,9 @@
 import { productsApi } from './api';
+import { use } from '../../.next/dev/static/chunks/13bde_next_dist_compiled_70c401b7._';
 import { Product, ProductFilters } from '@/types';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// ─── QUERY KEYS ───────────────────────────────────────────────────────────────
+//== QUERY KEYS
 
 export const productKeys = {
   all: ['products'] as const,
@@ -15,6 +16,13 @@ export const productKeys = {
   vendorProducts: (vendorId: string) =>
     [...productKeys.all, 'vendor', vendorId] as const,
 };
+
+export function useProductsCount() {
+  return useQuery({
+    queryKey: [...productKeys.all, 'count'],
+    queryFn: () => productsApi.getProductCategories(),
+  });
+}
 
 export function useProducts(filters?: ProductFilters) {
   return useQuery({
@@ -36,9 +44,9 @@ export function useFeaturedProducts() {
   return useQuery({
     queryKey: productKeys.featured(),
     queryFn: () => productsApi.getFeaturedProducts(),
-    retry: 2, // 👈 retry twice on failure
-    staleTime: 1000 * 60 * 5, // 👈 cache for 5 minutes
-    refetchOnWindowFocus: false, // 👈 don't refetch on tab switch
+    retry: 2,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -47,9 +55,9 @@ export function useVendorProducts(vendorId: string) {
     queryKey: productKeys.vendorProducts(vendorId),
     queryFn: () => productsApi.getVendorProducts(vendorId),
     enabled: !!vendorId,
-    retry: 2, // 👈 retry twice on failure
-    staleTime: 1000 * 60 * 5, // 👈 cache for 5 minutes
-    refetchOnWindowFocus: false, // 👈 don't refetch on tab switch
+    retry: 2,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
   });
 }
 

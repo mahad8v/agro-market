@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from './api';
-import { OrderStatus, ShippingAddress, CartVendorGroup } from '@/types';
+import { OrderStatus, ShippingAddress, CartVendorGroup } from '@/types/client';
 
 export const orderKeys = {
   all: ['orders'] as const,
@@ -33,8 +33,10 @@ export function useCustomerOrders() {
 export function useCreateOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { vendorGroups: CartVendorGroup[]; shippingAddress: ShippingAddress }) =>
-      ordersApi.createOrder(payload),
+    mutationFn: (payload: {
+      vendorGroups: CartVendorGroup[];
+      shippingAddress: ShippingAddress;
+    }) => ordersApi.createOrder(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: orderKeys.customer() });
     },

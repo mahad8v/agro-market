@@ -10,26 +10,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
       credentials: {
-        email:    { label: 'Email',    type: 'email'    },
+        email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await db.user.findUnique({
-          where:   { email: credentials.email as string },
+          where: { email: credentials.email as string },
           include: { vendor: { select: { id: true } } },
         });
         if (!user) return null;
 
-        const valid = await bcrypt.compare(credentials.password as string, user.password);
+        const valid = await bcrypt.compare(
+          credentials.password as string,
+          user.password,
+        );
         if (!valid) return null;
 
         return {
-          id:       user.id,
-          email:    user.email,
-          name:     user.name,
-          role:     user.role,
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
           vendorId: user.vendor?.id ?? null,
         };
       },
@@ -38,13 +41,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role     = (user as any).role;
+        token.role = (user as any).role;
         token.vendorId = (user as any).vendorId;
       }
       return token;
     },
     session({ session, token }) {
-      session.user.role     = token.role     as string;
+      session.user.role = token.role as string;
       session.user.vendorId = token.vendorId as string | null;
       return session;
     },

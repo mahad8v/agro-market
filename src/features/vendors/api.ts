@@ -1,5 +1,5 @@
 import api from '@/services/api';
-import { Vendor } from '@/types';
+import { Vendor } from '@/types/client';
 
 export const vendorsApi = {
   getVendors(): Promise<Vendor[]> {

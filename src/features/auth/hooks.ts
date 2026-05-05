@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { authApi } from './api';
 import { useAuth } from '@/context/AuthContext';
-import type { LoginCredentials, RegisterData } from '@/types';
+import type { LoginCredentials, RegisterData } from '@/types/client';
 
 export const useCurrentUser = () =>
   useQuery({

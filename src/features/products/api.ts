@@ -1,5 +1,5 @@
 import api from '@/services/api';
-import { Product, PaginatedProducts, ProductFilters } from '@/types';
+import { Product, PaginatedProducts, ProductFilters } from '@/types/client';
 
 export const productsApi = {
   // getProducts(filters?: ProductFilters): Promise<PaginatedProducts> {
@@ -31,6 +31,10 @@ export const productsApi = {
 
   getProductBySlug(slug: string): Promise<Product> {
     return api.get<Product>(`/products/${slug}`);
+  },
+
+  getProductCategories(): Promise<string> {
+    return api.get<string>(`/categories`);
   },
 
   getVendorProducts(vendorId: string): Promise<Product[]> {

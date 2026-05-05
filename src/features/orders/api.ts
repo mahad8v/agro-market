@@ -1,5 +1,10 @@
 import api from '@/services/api';
-import { Order, OrderStatus, ShippingAddress, CartVendorGroup } from '@/types';
+import {
+  Order,
+  OrderStatus,
+  ShippingAddress,
+  CartVendorGroup,
+} from '@/types/client';
 
 interface CreateOrderPayload {
   vendorGroups: CartVendorGroup[];

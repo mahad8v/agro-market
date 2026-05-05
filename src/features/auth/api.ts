@@ -1,5 +1,10 @@
 import api from '@/services/api';
-import { AuthResponse, LoginCredentials, RegisterData, User } from '@/types';
+import {
+  AuthResponse,
+  LoginCredentials,
+  RegisterData,
+  User,
+} from '@/types/client';
 
 export const authApi = {
   login(credentials: LoginCredentials): Promise<AuthResponse> {

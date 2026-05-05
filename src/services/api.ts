@@ -1,4 +1,4 @@
-import { ApiError } from '@/types';
+import { ApiError } from '@/types/client';
 
 const BASE_URL = 'http://localhost:3000/api';
 

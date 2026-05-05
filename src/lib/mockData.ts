@@ -1,11 +1,5 @@
-import {
-  Vendor,
-  Product,
-  Order,
-  Category,
-  AdminStats,
-  VendorStats,
-} from '@/types';
+import { AdminStats } from '@/types/admin';
+import { Vendor, Product, Order, Category, VendorStatus } from '@/types/client';
 
 export const MOCK_VENDORS: Vendor[] = [
   {
@@ -458,7 +452,7 @@ export const MOCK_ORDERS: Order[] = [
   },
 ];
 
-export const MOCK_CATEGORIES: import('@/types').Category[] = [
+export const MOCK_CATEGORIES: import('@/types/client').Category[] = [
   {
     id: 'cat-1',
     name: 'Vegetables',
@@ -542,7 +536,7 @@ export const MOCK_ADMIN_STATS: AdminStats = {
   recentOrders: MOCK_ORDERS.slice(0, 5),
 };
 
-export const MOCK_VENDOR_STATS: VendorStats = {
+export const MOCK_VENDOR_STATS: VendorStatus = {
   totalProducts: 22,
   totalOrders: 298,
   totalRevenue: 185000, // GMD

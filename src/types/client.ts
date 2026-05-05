@@ -1,5 +1,7 @@
 // ─── ENUMS ───────────────────────────────────────────────────────────────────
 
+import { ReactNode } from 'react';
+
 export type UserRole = 'CUSTOMER' | 'VENDOR' | 'ADMIN';
 
 export type ProductUnit = 'kg' | 'bag' | 'crate' | 'ton' | 'piece';
@@ -153,6 +155,7 @@ export interface Category {
   icon: string;
   description?: string;
   productCount?: number;
+  createdAt: string;
 }
 
 // ─── AUTH ────────────────────────────────────────────────────────────────────
