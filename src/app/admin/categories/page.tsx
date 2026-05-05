@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Button, Badge, Card, Table, Td, Modal, Input } from '@/components/ui';
 import { MOCK_CATEGORIES } from '@/lib/mockData';
-import { Category } from '@/types';
+import { Category } from '@/types/client';
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>(MOCK_CATEGORIES);
