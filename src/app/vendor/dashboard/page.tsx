@@ -3,22 +3,39 @@
 import React from 'react';
 import Link from 'next/link';
 import { StatCard, Card, Badge, Table, Td } from '@/components/ui';
-import { MOCK_VENDOR_STATS, MOCK_ORDERS, MOCK_PRODUCTS } from '@/lib/mockData';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils';
-import { OrderStatus, PaymentStatus } from '@/types/client';
+import { useVendorDashboard } from '@/hooks/useVendorDashboard';
+import type {
+  DashboardOrder,
+  DashboardOrderStatus,
+  DashboardProduct,
+  MonthlyRevenuPoint,
+  MonthlyOrderPoint,
+} from '@/types/vendor';
 
-function getOrderStatusBadge(status: OrderStatus) {
-  const map: Record<OrderStatus, { label: string; variant: any }> = {
-    pending: { label: 'Pending', variant: 'warning' },
-    confirmed: { label: 'Confirmed', variant: 'info' },
-    processing: { label: 'Processing', variant: 'purple' },
-    shipped: { label: 'Shipped', variant: 'info' },
-    delivered: { label: 'Delivered', variant: 'success' },
-    cancelled: { label: 'Cancelled', variant: 'danger' },
+// ── Badge helper ──────────────────────────────────────────────────────────────
+
+const ORDER_STATUS_MAP: Record<
+  DashboardOrderStatus,
+  { label: string; variant: string }
+> = {
+  pending: { label: 'Pending', variant: 'warning' },
+  confirmed: { label: 'Confirmed', variant: 'info' },
+  processing: { label: 'Processing', variant: 'purple' },
+  shipped: { label: 'Shipped', variant: 'info' },
+  delivered: { label: 'Delivered', variant: 'success' },
+  cancelled: { label: 'Cancelled', variant: 'danger' },
+};
+
+function OrderStatusBadge({ status }: { status: DashboardOrderStatus }) {
+  const { label, variant } = ORDER_STATUS_MAP[status] ?? {
+    label: status,
+    variant: 'info',
   };
-  const { label, variant } = map[status];
-  return <Badge variant={variant}>{label}</Badge>;
+  return <Badge variant={variant as any}>{label}</Badge>;
 }
+
+// ── Chart components ──────────────────────────────────────────────────────────
 
 function MiniChart({
   data,
@@ -27,6 +44,7 @@ function MiniChart({
   data: number[];
   color?: string;
 }) {
+  if (!data.length) return null;
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
@@ -58,12 +76,8 @@ function MiniChart({
   );
 }
 
-function RevenueBarChart({
-  data,
-}: {
-  data: { month: string; revenue: number }[];
-}) {
-  const max = Math.max(...data.map((d) => d.revenue));
+function RevenueBarChart({ data }: { data: MonthlyRevenuPoint[] }) {
+  const max = Math.max(...data.map((d) => d.revenue), 1);
   return (
     <div className="flex items-end gap-2 h-40">
       {data.map((d) => {
@@ -87,31 +101,92 @@ function RevenueBarChart({
   );
 }
 
-export default function VendorDashboard() {
-  const stats = MOCK_VENDOR_STATS;
-  const recentOrders = MOCK_ORDERS.filter(
-    (o) => o.vendorId === 'vendor-1',
-  ).slice(0, 4);
-  const topProducts = MOCK_PRODUCTS.filter(
-    (p) => p.vendorId === 'vendor-1',
-  ).slice(0, 4);
+// ── Skeleton helpers ──────────────────────────────────────────────────────────
 
-  const revenueValues = stats.monthlyRevenue.map(
-    (d: { revenue: any }) => d.revenue,
+function SkeletonBlock({ className = '' }: { className?: string }) {
+  return <div className={`bg-gray-100 rounded animate-pulse ${className}`} />;
+}
+
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+      <SkeletonBlock className="h-8 w-8 rounded-lg" />
+      <SkeletonBlock className="h-6 w-24" />
+      <SkeletonBlock className="h-3 w-20" />
+      <SkeletonBlock className="h-3 w-28" />
+    </div>
   );
-  const ordersValues = stats.monthlyOrders.map(
-    (d: { orders: any }) => d.orders,
+}
+
+function ChartSkeleton() {
+  return (
+    <div className="flex items-end gap-2 h-40">
+      {[60, 45, 80, 55, 90, 70].map((h, i) => (
+        <div
+          key={i}
+          className="flex-1 bg-gray-100 rounded-t-md animate-pulse"
+          style={{ height: `${h}%` }}
+        />
+      ))}
+    </div>
   );
+}
+
+// ── Error state ───────────────────────────────────────────────────────────────
+
+function ErrorState({ message }: { message: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-3">
+        <svg
+          className="w-6 h-6 text-red-400"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <p className="text-sm font-semibold text-gray-900">
+        Failed to load dashboard
+      </p>
+      <p className="text-xs text-gray-400 mt-1">{message}</p>
+    </div>
+  );
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
+export default function VendorDashboard() {
+  const { data, isLoading, isError, error } = useVendorDashboard();
+
+  if (isError) {
+    return (
+      <ErrorState message={(error as Error)?.message ?? 'Unknown error'} />
+    );
+  }
+
+  const revenueValues = data?.monthlyRevenue.map((d) => d.revenue) ?? [];
+  const ordersValues = data?.monthlyOrders.map((d) => d.orders) ?? [];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      {/* ── Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Vendor Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Welcome back, Green Valley Farms 👋
-          </p>
+          {isLoading ? (
+            <SkeletonBlock className="h-4 w-48 mt-1" />
+          ) : (
+            <p className="text-sm text-gray-500 mt-0.5">
+              Welcome back, {data!.vendorName} 👋
+            </p>
+          )}
         </div>
         <Link
           href="/vendor/products/create"
@@ -134,113 +209,134 @@ export default function VendorDashboard() {
         </Link>
       </div>
 
-      {/* Stats */}
+      {/* ── Stat cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Products"
-          value={stats.totalProducts}
-          icon={
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-              />
-            </svg>
-          }
-          change="+3 this month"
-          color="green"
-        />
-        <StatCard
-          title="Total Orders"
-          value={stats.totalOrders}
-          icon={
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-          }
-          change="+18 this week"
-          color="blue"
-        />
-        <StatCard
-          title="Revenue (KES)"
-          value={formatCurrency(stats.totalRevenue)}
-          icon={
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          }
-          change="+12.4% vs last month"
-          color="purple"
-        />
-        <StatCard
-          title="Pending Orders"
-          value={stats.pendingOrders}
-          icon={
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          }
-          change="Needs attention"
-          changeType="negative"
-          color="amber"
-        />
+        {isLoading ? (
+          Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+        ) : (
+          <>
+            <StatCard
+              title="Total Products"
+              value={data!.stats.totalProducts}
+              icon={
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              }
+              change={`+${data!.stats.productsThisMonth} this month`}
+              color="green"
+            />
+            <StatCard
+              title="Total Orders"
+              value={data!.stats.totalOrders}
+              icon={
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  />
+                </svg>
+              }
+              change={`+${data!.stats.ordersThisWeek} this week`}
+              color="blue"
+            />
+            <StatCard
+              title="Revenue"
+              value={formatCurrency(data!.stats.totalRevenue)}
+              icon={
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              }
+              change={`${data!.stats.revenueChange >= 0 ? '+' : ''}${data!.stats.revenueChange}% vs last month`}
+              color="purple"
+            />
+            <StatCard
+              title="Pending Orders"
+              value={data!.stats.pendingOrders}
+              icon={
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              }
+              change="Needs attention"
+              changeType="negative"
+              color="amber"
+            />
+          </>
+        )}
       </div>
 
-      {/* Charts */}
+      {/* ── Charts ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Revenue bar chart */}
         <Card>
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="font-semibold text-gray-900">Monthly Revenue</h3>
               <p className="text-xs text-gray-500">Last 6 months</p>
             </div>
-            <div className="text-right">
-              <p className="text-lg font-bold text-emerald-600">
-                {formatCurrency(stats.totalRevenue)}
-              </p>
-              <p className="text-xs text-emerald-500">↑ 12.4%</p>
-            </div>
+            {isLoading ? (
+              <SkeletonBlock className="h-8 w-28" />
+            ) : (
+              <div className="text-right">
+                <p className="text-lg font-bold text-emerald-600">
+                  {formatCurrency(data!.stats.totalRevenue)}
+                </p>
+                <p
+                  className={`text-xs ${data!.stats.revenueChange >= 0 ? 'text-emerald-500' : 'text-red-400'}`}
+                >
+                  {data!.stats.revenueChange >= 0 ? '↑' : '↓'}{' '}
+                  {Math.abs(data!.stats.revenueChange)}%
+                </p>
+              </div>
+            )}
           </div>
-          <RevenueBarChart data={stats.monthlyRevenue} />
+          {isLoading ? (
+            <ChartSkeleton />
+          ) : (
+            <RevenueBarChart data={data!.monthlyRevenue} />
+          )}
         </Card>
 
+        {/* Orders trend */}
         <Card>
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -248,87 +344,42 @@ export default function VendorDashboard() {
               <p className="text-xs text-gray-500">Last 6 months</p>
             </div>
           </div>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
-                <span>Orders</span>
-                <span className="font-medium text-gray-900">
-                  {stats.totalOrders} total
-                </span>
+          {isLoading ? (
+            <div className="space-y-4">
+              <SkeletonBlock className="h-10 w-full" />
+              <div className="grid grid-cols-6 gap-1">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <SkeletonBlock key={i} className="h-10" />
+                ))}
               </div>
-              <MiniChart data={ordersValues} color="#3b82f6" />
             </div>
-            <div className="grid grid-cols-6 gap-1 mt-2">
-              {stats.monthlyOrders.map(
-                (d: {
-                  month:
-                    | boolean
-                    | React.Key
-                    | React.ReactElement<
-                        unknown,
-                        string | React.JSXElementConstructor<any>
-                      >
-                    | Iterable<React.ReactNode>
-                    | Promise<
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | React.ReactPortal
-                        | React.ReactElement<
-                            unknown,
-                            string | React.JSXElementConstructor<any>
-                          >
-                        | Iterable<React.ReactNode>
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined;
-                  orders:
-                    | string
-                    | number
-                    | bigint
-                    | boolean
-                    | React.ReactElement<
-                        unknown,
-                        string | React.JSXElementConstructor<any>
-                      >
-                    | Iterable<React.ReactNode>
-                    | React.ReactPortal
-                    | Promise<
-                        | string
-                        | number
-                        | bigint
-                        | boolean
-                        | React.ReactPortal
-                        | React.ReactElement<
-                            unknown,
-                            string | React.JSXElementConstructor<any>
-                          >
-                        | Iterable<React.ReactNode>
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined;
-                }) => (
-                  // @ts-ignore
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Orders</span>
+                  <span className="font-medium text-gray-900">
+                    {data!.stats.totalOrders} total
+                  </span>
+                </div>
+                <MiniChart data={ordersValues} color="#3b82f6" />
+              </div>
+              <div className="grid grid-cols-6 gap-1 mt-2">
+                {data!.monthlyOrders.map((d: MonthlyOrderPoint) => (
                   <div key={d.month} className="text-center">
                     <p className="text-sm font-bold text-gray-800">
                       {d.orders}
                     </p>
-                    {/* @ts-ignore */}
                     <p className="text-xs text-gray-400">{d.month}</p>
                   </div>
-                ),
-              )}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </Card>
       </div>
 
-      {/* Recent Orders */}
+      {/* ── Recent Orders ── */}
       <Card padding="none">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">Recent Orders</h3>
@@ -339,30 +390,49 @@ export default function VendorDashboard() {
             View all →
           </Link>
         </div>
-        <Table headers={['Order ID', 'Customer', 'Amount', 'Status', 'Date']}>
-          {recentOrders.map((order) => (
-            <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-              <Td>
-                <span className="font-mono font-medium text-gray-900">
-                  {order.id}
-                </span>
-              </Td>
-              <Td>{order.customerName}</Td>
-              <Td>
-                <span className="font-semibold text-gray-900">
-                  {formatCurrency(order.totalAmount)}
-                </span>
-              </Td>
-              <Td>{getOrderStatusBadge(order.orderStatus)}</Td>
-              <Td className="text-gray-400 text-xs">
-                {formatRelativeTime(order.createdAt)}
-              </Td>
-            </tr>
-          ))}
-        </Table>
+        {isLoading ? (
+          <div className="divide-y divide-gray-50">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between px-6 py-4 gap-4"
+              >
+                <SkeletonBlock className="h-4 w-24" />
+                <SkeletonBlock className="h-4 w-28" />
+                <SkeletonBlock className="h-4 w-20" />
+                <SkeletonBlock className="h-5 w-20 rounded-full" />
+                <SkeletonBlock className="h-3 w-16" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Table headers={['Order ID', 'Customer', 'Amount', 'Status', 'Date']}>
+            {(data?.recentOrders ?? []).map((order: DashboardOrder) => (
+              <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                <Td>
+                  <span className="font-mono font-medium text-gray-900">
+                    {order.displayId}
+                  </span>
+                </Td>
+                <Td>{order.customerName}</Td>
+                <Td>
+                  <span className="font-semibold text-gray-900">
+                    {formatCurrency(order.totalAmount)}
+                  </span>
+                </Td>
+                <Td>
+                  <OrderStatusBadge status={order.orderStatus} />
+                </Td>
+                <Td className="text-gray-400 text-xs">
+                  {formatRelativeTime(order.createdAt)}
+                </Td>
+              </tr>
+            ))}
+          </Table>
+        )}
       </Card>
 
-      {/* Top Products */}
+      {/* ── Top Products ── */}
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Your Products</h3>
@@ -373,41 +443,60 @@ export default function VendorDashboard() {
             Manage all →
           </Link>
         </div>
-        <div className="space-y-3">
-          {topProducts.map((product) => (
-            <div
-              key={product.id}
-              className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center text-2xl shrink-0">
-                🌿
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-3 rounded-xl">
+                <SkeletonBlock className="w-12 h-12 rounded-lg shrink-0" />
+                <div className="flex-1 space-y-1.5">
+                  <SkeletonBlock className="h-3.5 w-36" />
+                  <SkeletonBlock className="h-3 w-24" />
+                </div>
+                <div className="text-right space-y-1.5">
+                  <SkeletonBlock className="h-3.5 w-20" />
+                  <SkeletonBlock className="h-3 w-14" />
+                </div>
+                <SkeletonBlock className="h-5 w-16 rounded-full" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">
-                  {product.name}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {product.stock} {product.unit} in stock
-                </p>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {(data?.topProducts ?? []).map((product: DashboardProduct) => (
+              <div
+                key={product.id}
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                <div className="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center text-2xl shrink-0">
+                  🌿
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {product.name}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {product.stock} {product.unit} in stock
+                  </p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-bold text-gray-900">
+                    {formatCurrency(product.price)}
+                  </p>
+                  <p className="text-xs text-gray-400">per {product.unit}</p>
+                </div>
+                <div>
+                  {product.stockStatus === 'in_stock' ? (
+                    <Badge variant="success">In Stock</Badge>
+                  ) : product.stockStatus === 'low_stock' ? (
+                    <Badge variant="warning">Low</Badge>
+                  ) : (
+                    <Badge variant="danger">Out</Badge>
+                  )}
+                </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-sm font-bold text-gray-900">
-                  {formatCurrency(product.price)}
-                </p>
-                <p className="text-xs text-gray-400">per {product.unit}</p>
-              </div>
-              <div>
-                {product.stock > 50 ? (
-                  <Badge variant="success">In Stock</Badge>
-                ) : product.stock > 0 ? (
-                  <Badge variant="warning">Low</Badge>
-                ) : (
-                  <Badge variant="danger">Out</Badge>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   );

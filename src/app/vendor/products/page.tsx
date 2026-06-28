@@ -1,46 +1,81 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Button, Badge, Card, Table, Td, Modal, Input } from '@/components/ui';
-import { MOCK_PRODUCTS } from '@/lib/mockData';
-import { Product } from '@/types/client';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
+import { useVendorProducts, VendorProduct } from '@/hooks/useVendorProduct';
+
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = React.useState(value);
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
 
 export default function VendorProductsPage() {
-  const [products, setProducts] = useState<Product[]>(
-    MOCK_PRODUCTS.filter((p) => p.vendorId === 'vendor-1'),
-  );
-  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [search, setSearch] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<VendorProduct | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
-  const filtered = products.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.category.toLowerCase().includes(search.toLowerCase()),
-  );
+  const debouncedSearch = useDebounce(search, 300);
 
-  const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id));
-    setDeleteTarget(null);
+  const { products, total, loading, error, deleteProduct, toggleStock } =
+    useVendorProducts({
+      search: debouncedSearch,
+    });
+
+  console.log('*****************88', products);
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3000);
   };
 
-  const toggleStock = (id: string) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, stock: p.stock > 0 ? 0 : 100 } : p,
-      ),
-    );
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteError(null);
+    try {
+      await deleteProduct(deleteTarget.id);
+      setDeleteTarget(null);
+      showToast(`"${deleteTarget.name}" deleted`);
+    } catch (e: any) {
+      setDeleteError(e.message);
+    }
   };
+
+  const handleToggleStock = async (id: string) => {
+    try {
+      await toggleStock(id);
+    } catch (e: any) {
+      showToast(`Error: ${e.message}`);
+    }
+  };
+
+  const inStock = products.filter((p) => p.stock > 50).length;
+  const lowStock = products.filter((p) => p.stock > 0 && p.stock <= 50).length;
+  const outOfStock = products.filter((p) => p.stock === 0).length;
 
   return (
     <div className="p-6 space-y-6">
+      {/* Toast */}
+      {toastMsg && (
+        <div className="fixed top-4 right-4 z-50 bg-gray-900 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+          {toastMsg}
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">My Products</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {products.length} products listed
+            {loading
+              ? 'Loading…'
+              : `${total} product${total !== 1 ? 's' : ''} listed`}
           </p>
         </div>
         <Link href="/vendor/products/create">
@@ -69,29 +104,27 @@ export default function VendorProductsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          {
-            label: 'Total',
-            value: products.length,
-            color: 'bg-gray-100 text-gray-800',
-          },
+          { label: 'Total', value: total, color: 'bg-gray-100 text-gray-800' },
           {
             label: 'In Stock',
-            value: products.filter((p) => p.stock > 50).length,
+            value: inStock,
             color: 'bg-emerald-100 text-emerald-800',
           },
           {
             label: 'Low Stock',
-            value: products.filter((p) => p.stock > 0 && p.stock <= 50).length,
+            value: lowStock,
             color: 'bg-amber-100 text-amber-800',
           },
           {
             label: 'Out of Stock',
-            value: products.filter((p) => p.stock === 0).length,
+            value: outOfStock,
             color: 'bg-red-100 text-red-800',
           },
         ].map((s) => (
           <Card key={s.label} className="text-center py-4">
-            <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {loading ? '–' : s.value}
+            </p>
             <span
               className={`mt-1 inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${s.color}`}
             >
@@ -104,7 +137,7 @@ export default function VendorProductsPage() {
       {/* Search */}
       <Card padding="sm">
         <Input
-          placeholder="Search products by name or category..."
+          placeholder="Search products by name or category…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           leftIcon={
@@ -125,99 +158,135 @@ export default function VendorProductsPage() {
         />
       </Card>
 
+      {/* Error */}
+      {error && (
+        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
       {/* Table */}
       <Card padding="none">
-        <Table
-          headers={[
-            'Product',
-            'Category',
-            'Price',
-            'Stock',
-            'Status',
-            'Actions',
-          ]}
-        >
-          {filtered.map((product) => (
-            <tr key={product.id} className="hover:bg-gray-50 transition-colors">
-              <Td>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-xl shrink-0">
-                    🌿
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <Table
+            headers={[
+              'Product',
+              'Category',
+              'Price',
+              'Stock',
+              'Status',
+              'Actions',
+            ]}
+          >
+            {products.map((product) => (
+              <tr
+                key={product.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                <Td>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-xl shrink-0">
+                      {product.category?.icon ?? '🌿'}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm">
+                        {product.name}
+                      </p>
+                      <p className="text-xs text-gray-400">{product.unit}</p>
+                    </div>
                   </div>
+                </Td>
+                <Td>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm">
+                      {product.category?.name ?? '—'}
+                    </span>
+                    {product.isOrganic && (
+                      <Badge variant="success" size="sm">
+                        Organic
+                      </Badge>
+                    )}
+                  </div>
+                </Td>
+                <Td>
                   <div>
-                    <p className="font-semibold text-gray-900 text-sm">
-                      {product.name}
+                    <p className="font-semibold text-gray-900">
+                      {formatCurrency(product.discountPrice ?? product.price)}
                     </p>
-                    <p className="text-xs text-gray-400">{product.unit}</p>
+                    {product.discountPrice && (
+                      <p className="text-xs text-gray-400 line-through">
+                        {formatCurrency(product.price)}
+                      </p>
+                    )}
                   </div>
-                </div>
-              </Td>
-              <Td>
-                <span className="text-sm">{product.category}</span>
-                {product.isOrganic && (
-                  <Badge variant="success" size="sm">
-                    Organic
-                  </Badge>
-                )}
-              </Td>
-              <Td>
-                <div>
-                  <p className="font-semibold text-gray-900">
-                    {formatCurrency(product.discountPrice ?? product.price)}
-                  </p>
-                  {product.discountPrice && (
-                    <p className="text-xs text-gray-400 line-through">
-                      {formatCurrency(product.price)}
-                    </p>
+                </Td>
+                <Td>
+                  <span
+                    className={`font-semibold ${
+                      product.stock > 50
+                        ? 'text-emerald-600'
+                        : product.stock > 0
+                          ? 'text-amber-600'
+                          : 'text-red-600'
+                    }`}
+                  >
+                    {product.stock} {product.unit}
+                  </span>
+                </Td>
+                <Td>
+                  {product.stock > 50 ? (
+                    <Badge variant="success">In Stock</Badge>
+                  ) : product.stock > 0 ? (
+                    <Badge variant="warning">Low Stock</Badge>
+                  ) : (
+                    <Badge variant="danger">Out of Stock</Badge>
                   )}
-                </div>
-              </Td>
-              <Td>
-                <span
-                  className={`font-semibold ${product.stock > 50 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-600' : 'text-red-600'}`}
-                >
-                  {product.stock} {product.unit}
-                </span>
-              </Td>
-              <Td>
-                {product.stock > 50 ? (
-                  <Badge variant="success">In Stock</Badge>
-                ) : product.stock > 0 ? (
-                  <Badge variant="warning">Low Stock</Badge>
-                ) : (
-                  <Badge variant="danger">Out of Stock</Badge>
-                )}
-              </Td>
-              <Td>
-                <div className="flex items-center gap-2">
-                  <Link href={`/vendor/products/${product.id}/edit`}>
-                    <Button variant="outline" size="sm">
-                      Edit
+                </Td>
+                <Td>
+                  <div className="flex items-center gap-2">
+                    <Link href={`/vendor/products/${product.id}/edit`}>
+                      <Button variant="outline" size="sm">
+                        Edit
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleToggleStock(product.id)}
+                    >
+                      {product.stock > 0 ? 'Mark Out' : 'Restock'}
                     </Button>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleStock(product.id)}
-                  >
-                    {product.stock > 0 ? 'Mark Out' : 'Restock'}
-                  </Button>
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => setDeleteTarget(product)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </Td>
-            </tr>
-          ))}
-        </Table>
-        {filtered.length === 0 && (
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => setDeleteTarget(product)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </Td>
+              </tr>
+            ))}
+          </Table>
+        )}
+
+        {!loading && products.length === 0 && (
           <div className="text-center py-12 text-gray-500">
             <p className="text-4xl mb-2">📦</p>
-            <p className="font-medium">No products found</p>
+            <p className="font-medium">
+              {search ? 'No products match your search' : 'No products yet'}
+            </p>
+            {!search && (
+              <Link href="/vendor/products/create">
+                <Button className="mt-4" size="sm">
+                  Add your first product
+                </Button>
+              </Link>
+            )}
           </div>
         )}
       </Card>
@@ -225,25 +294,36 @@ export default function VendorProductsPage() {
       {/* Delete Confirm */}
       <Modal
         isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
+        onClose={() => {
+          setDeleteTarget(null);
+          setDeleteError(null);
+        }}
         title="Delete Product"
         size="sm"
       >
-        <p className="text-gray-600 mb-6">
+        <p className="text-gray-600 mb-4">
           Are you sure you want to delete{' '}
           <span className="font-semibold text-gray-900">
             "{deleteTarget?.name}"
           </span>
           ? This action cannot be undone.
         </p>
+        {deleteError && (
+          <p className="mb-4 text-sm text-red-600 bg-red-50 rounded px-3 py-2">
+            {deleteError}
+          </p>
+        )}
         <div className="flex gap-3 justify-end">
-          <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setDeleteTarget(null);
+              setDeleteError(null);
+            }}
+          >
             Cancel
           </Button>
-          <Button
-            variant="danger"
-            onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
-          >
+          <Button variant="danger" onClick={handleDelete}>
             Delete
           </Button>
         </div>
