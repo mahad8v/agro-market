@@ -1,3 +1,4 @@
+// src/services/orders.service.ts (or wherever ordersApi lives)
 import api from '@/services/api';
 import {
   Order,
@@ -13,22 +14,22 @@ interface CreateOrderPayload {
 
 export const ordersApi = {
   createOrder(payload: CreateOrderPayload): Promise<Order[]> {
-    return api.post<Order[]>('/orders', payload);
+    return api.post('/orders', payload);
   },
 
   getVendorOrders(): Promise<Order[]> {
-    return api.get<Order[]>('/vendor/orders');
+    return api.get('/vendors/orders');
   },
 
-  getAdminOrders(): Promise<Order[]> {
-    return api.get<Order[]>('/admin/orders');
+  getAdminOrders() {
+    return api.get('/orders');
   },
 
-  getCustomerOrders(): Promise<Order[]> {
-    return api.get<Order[]>('/orders/my');
+  getCustomerOrders() {
+    return api.get('/orders/my');
   },
 
-  updateOrderStatus(id: string, status: OrderStatus): Promise<Order> {
+  updateOrderStatus(id: string, status: OrderStatus) {
     return api.patch<Order>(`/orders/${id}/status`, { status });
   },
 };

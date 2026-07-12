@@ -81,7 +81,7 @@ async function main() {
     create: {
       name: 'Sheikh Joof',
       email: 'admin@agrimarket.com',
-      password: await hash('admin123', 12),
+      password: await hash('admin@agrimarket.com', 12),
       role: 'ADMIN',
     },
   });

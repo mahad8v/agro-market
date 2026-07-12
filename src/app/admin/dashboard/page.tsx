@@ -8,9 +8,8 @@ import { useAdminStats } from '@/features/admin/hooks';
 import { OrderStatus } from '@/types/client';
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-
-function getOrderStatusBadge(status: OrderStatus) {
-  const map: Record<OrderStatus, { label: string; variant: any }> = {
+function getOrderStatusBadge(status: OrderStatus | string | null | undefined) {
+  const map: Record<string, { label: string; variant: any }> = {
     pending: { label: 'Pending', variant: 'warning' },
     confirmed: { label: 'Confirmed', variant: 'info' },
     processing: { label: 'Processing', variant: 'purple' },
@@ -18,8 +17,15 @@ function getOrderStatusBadge(status: OrderStatus) {
     delivered: { label: 'Delivered', variant: 'success' },
     cancelled: { label: 'Cancelled', variant: 'danger' },
   };
-  const { label, variant } = map[status];
-  return <Badge variant={variant}>{label}</Badge>;
+
+  // Normalize casing — Prisma enums are commonly stored uppercase (e.g. 'PENDING')
+  const key = typeof status === 'string' ? status.toLowerCase() : '';
+  const entry = map[key] ?? {
+    label: status ? String(status) : 'Unknown',
+    variant: 'default',
+  };
+
+  return <Badge variant={entry.variant}>{entry.label}</Badge>;
 }
 
 // ─── BAR CHART ───────────────────────────────────────────────────────────────

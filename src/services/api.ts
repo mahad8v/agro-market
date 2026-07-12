@@ -1,119 +1,41 @@
+// src/services/api.ts
+import axios from 'axios';
 import { ApiError } from '@/types/client';
 
-const BASE_URL = 'http://localhost:3000/api';
+const api = axios.create({
+  baseURL: 'http://localhost:3000/api',
+  withCredentials: true,
+});
 
-interface RequestConfig extends RequestInit {
-  params?: Record<string, string | number | boolean | undefined>;
-  isMultipart?: boolean; // ✅ ADD THIS FLAG
-}
+// ── Request interceptor: always attach token from cookie ────────────────────
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
+    const token = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('auth_token='))
+      ?.split('=')[1];
 
-function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('auth_token');
-}
-
-function buildUrl(
-  endpoint: string,
-  params?: Record<string, string | number | boolean | undefined>,
-): string {
-  const url = new URL(`${BASE_URL}${endpoint}`);
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        url.searchParams.append(key, String(value));
-      }
-    });
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
-  return url.toString();
-}
+  return config;
+});
 
-async function request<T>(
-  endpoint: string,
-  config: RequestConfig = {},
-): Promise<T> {
-  const { params, headers, isMultipart, ...rest } = config; // ✅ extract isMultipart
-
-  const token = getToken();
-
-  // ✅ Don't set Content-Type for multipart — browser sets it automatically
-  // with the correct boundary. Setting it manually breaks file uploads.
-  const defaultHeaders: HeadersInit = {
-    ...(!isMultipart && { 'Content-Type': 'application/json' }),
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-
-  const url = buildUrl(endpoint, params);
-
-  const response = await fetch(url, {
-    ...rest,
-    headers: {
-      ...defaultHeaders,
-      ...headers,
-    },
-  });
-
-  const contentType = response.headers.get('content-type');
-  const isJson = contentType?.includes('application/json');
-
-  if (!response.ok) {
-    const errorBody = isJson
-      ? await response.json()
-      : { message: response.statusText };
+// ── Response interceptor: unwrap data, normalize errors, handle 401 ─────────
+api.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
     const apiError: ApiError = {
-      message: errorBody.message || 'An error occurred',
-      statusCode: response.status,
+      message:
+        error.response?.data?.message ?? error.message ?? 'An error occurred',
+      statusCode: error.response?.status ?? 500,
     };
-    throw apiError;
-  }
-
-  if (response.status === 204) {
-    return undefined as T;
-  }
-
-  return isJson ? response.json() : (response.text() as T);
-}
-
-export const api = {
-  get<T>(
-    endpoint: string,
-    params?: Record<string, string | number | boolean | undefined>,
-  ): Promise<T> {
-    return request<T>(endpoint, { method: 'GET', params });
+    return Promise.reject(apiError);
   },
-
-  post<T>(endpoint: string, body?: unknown): Promise<T> {
-    return request<T>(endpoint, {
-      method: 'POST',
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  },
-
-  put<T>(endpoint: string, body?: unknown): Promise<T> {
-    return request<T>(endpoint, {
-      method: 'PUT',
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  },
-
-  patch<T>(endpoint: string, body?: unknown): Promise<T> {
-    return request<T>(endpoint, {
-      method: 'PATCH',
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  },
-
-  delete<T>(endpoint: string): Promise<T> {
-    return request<T>(endpoint, { method: 'DELETE' });
-  },
-
-  // ✅ Fixed: pass isMultipart flag so Content-Type is NOT set manually
-  upload<T>(endpoint: string, formData: FormData): Promise<T> {
-    return request<T>(endpoint, {
-      method: 'POST',
-      body: formData,
-      isMultipart: true,
-    });
-  },
-};
+);
 
 export default api;

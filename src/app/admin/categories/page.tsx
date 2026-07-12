@@ -2,17 +2,24 @@
 
 import React, { useState } from 'react';
 import { Button, Badge, Card, Table, Td, Modal, Input } from '@/components/ui';
-import { MOCK_CATEGORIES } from '@/lib/mockData';
 import { Category } from '@/types/client';
+import {
+  useCategories,
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from '@/hooks/useCategories';
 
 export default function AdminCategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>(MOCK_CATEGORIES);
+  const { data: categories = [], isLoading } = useCategories();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
+
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Category | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
-
   const [form, setForm] = useState({ name: '', icon: '', description: '' });
-  const [saving, setSaving] = useState(false);
 
   const openCreate = () => {
     setForm({ name: '', icon: '', description: '' });
@@ -30,33 +37,18 @@ export default function AdminCategoriesPage() {
 
   const handleSave = async () => {
     if (!form.name.trim()) return;
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
 
     if (editTarget) {
-      setCategories((prev) =>
-        prev.map((c) => (c.id === editTarget.id ? { ...c, ...form } : c)),
-      );
+      await updateCategory.mutateAsync({ id: editTarget.id, ...form });
       setEditTarget(null);
     } else {
-      const newCat: Category = {
-        id: `cat-${Date.now()}`,
-        name: form.name,
-        slug: form.name.toLowerCase().replace(/\s+/g, '-'),
-        description: form.description,
-        icon: form.icon,
-        productCount: 0,
-        // @ts-ignore
-        createdAt: new Date().toISOString(),
-      };
-      setCategories((prev) => [...prev, newCat]);
+      await createCategory.mutateAsync(form);
       setIsCreateOpen(false);
     }
   };
 
-  const deleteCategory = (id: string) => {
-    setCategories((prev) => prev.filter((c) => c.id !== id));
+  const handleDelete = async (id: string) => {
+    await deleteCategory.mutateAsync(id);
     setDeleteTarget(null);
   };
 
@@ -66,6 +58,11 @@ export default function AdminCategoriesPage() {
     setIsCreateOpen(false);
     setEditTarget(null);
   };
+  const saving = createCategory.isPending || updateCategory.isPending;
+
+  if (isLoading) {
+    return <div className="p-6 text-sm text-gray-500">Loading categories…</div>;
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -98,7 +95,6 @@ export default function AdminCategoriesPage() {
         </Button>
       </div>
 
-      {/* Category Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
         {categories.map((cat) => (
           <Card
@@ -115,7 +111,6 @@ export default function AdminCategoriesPage() {
         ))}
       </div>
 
-      {/* Table */}
       <Card padding="none">
         <Table headers={['Icon', 'Name', 'Slug', 'Products', 'Actions']}>
           {categories.map((cat) => (
@@ -155,7 +150,6 @@ export default function AdminCategoriesPage() {
                     variant="danger"
                     size="sm"
                     onClick={() => setDeleteTarget(cat)}
-                    // @ts-ignore
                     disabled={cat.productCount > 0}
                   >
                     Delete
@@ -167,7 +161,6 @@ export default function AdminCategoriesPage() {
         </Table>
       </Card>
 
-      {/* Create/Edit Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -218,7 +211,6 @@ export default function AdminCategoriesPage() {
         </div>
       </Modal>
 
-      {/* Delete Confirm */}
       <Modal
         isOpen={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
@@ -238,7 +230,8 @@ export default function AdminCategoriesPage() {
           </Button>
           <Button
             variant="danger"
-            onClick={() => deleteTarget && deleteCategory(deleteTarget.id)}
+            loading={deleteCategory.isPending}
+            onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
           >
             Delete
           </Button>

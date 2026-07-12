@@ -38,9 +38,7 @@ export default function LoginPage() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2">
               <span className="text-3xl">🌾</span>
-              <span className="text-2xl font-bold text-green-700">
-                AgroMarket
-              </span>
+              <span className="text-2xl font-bold text-green-700">Senela</span>
             </Link>
             <p className="text-gray-500 mt-2 text-sm">
               Welcome back! Sign in to continue.
