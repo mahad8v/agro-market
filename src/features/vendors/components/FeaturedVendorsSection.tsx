@@ -14,22 +14,27 @@ export function FeaturedVendorsSection() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Top Vendors</h2>
-            <p className="text-gray-500 text-sm mt-1">Verified farmers and agricultural suppliers</p>
+            <p className="text-gray-500 text-sm mt-1">
+              Verified farmers and agricultural suppliers
+            </p>
           </div>
-          <Link href="/vendors" className="text-sm font-medium text-green-600 hover:text-green-700">
+          {/* <Link href="/vendors" className="text-sm font-medium text-green-600 hover:text-green-700">
             View All →
-          </Link>
+          </Link> */}
         </div>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="animate-pulse rounded-xl border border-gray-200 bg-white h-48" />
+              <div
+                key={i}
+                className="animate-pulse rounded-xl border border-gray-200 bg-white h-48"
+              />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {(vendors ?? []).slice(0, 4).map(vendor => (
+            {(vendors ?? []).slice(0, 4).map((vendor) => (
               <VendorCard key={vendor.id} vendor={vendor} />
             ))}
           </div>

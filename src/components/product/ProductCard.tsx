@@ -16,7 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card hover className="overflow-hidden flex flex-col">
-      <Link href={`/products/${product.slug}`} className="relative block">
+      <div className="relative block">
         <div className="relative h-48 w-full bg-gray-100">
           <Image
             src={product.images[0] || '/placeholder-product.jpg'}
@@ -35,15 +35,15 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
         </div>
-      </Link>
+      </div>
 
       <div className="p-4 flex flex-col flex-1 gap-2">
         <div className="flex items-start justify-between gap-2">
-          <Link href={`/products/${product.slug}`}>
+          <div>
             <h3 className="font-semibold text-gray-900 text-sm leading-tight hover:text-green-700 line-clamp-2">
               {product.name}
             </h3>
-          </Link>
+          </div>
           <Badge variant="gray">{product.unit}</Badge>
         </div>
 

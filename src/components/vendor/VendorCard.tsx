@@ -103,11 +103,11 @@ export function VendorCard({ vendor }: VendorCardProps) {
 
         <div className="flex items-start justify-between">
           <div>
-            <Link href={`/vendors/${vendor.id}`}>
+            <div>
               <h3 className="font-semibold text-gray-900 hover:text-green-700">
                 {vendor.businessName}
               </h3>
-            </Link>
+            </div>
             <p className="text-xs text-gray-500">📍 {vendor.location}</p>
           </div>
           <div className="flex flex-col items-end gap-1">

@@ -1,4 +1,3 @@
-// src/app/api/admin/categories/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { categoryService } from '@/server/services/category.service';
 import { verifyToken } from '@/server/jwt';
